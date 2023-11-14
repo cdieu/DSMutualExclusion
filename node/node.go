@@ -63,7 +63,17 @@ func waitForTokenRequest(n *node) {
 
 		if n.token {
 			log.Printf("Node with ID: %d has token, and is in CS", n.id)
+			releaseresponse, err := connection.ReleaseToken(context.Background(), &pb.ReleaseRequest{
+				HolderID: int64(n.id),
+			})
+			if err != nil {
+				log.Printf(err.Error())
+			} else {
 
+				n.token = releaseresponse.Access
+				//Prints 1 when true
+				log.Printf("Tokenholder with ID: %d releases the token", n.id)
+			}
 		} else {
 			log.Printf("Node with ID: %d requests token", n.id)
 			tokenResponse, err := connection.RequestToken(context.Background(), &pb.TokenRequest{
@@ -100,7 +110,10 @@ func connect() (pb.MutualClient, error) {
 //____________________________________
 
 func (c *node) ReleaseToken(ctx context.Context, in *pb.ReleaseRequest) (*pb.ReleaseResponse, error) {
-
+	log.Printf("Node with ID %d wants to release token", in.HolderID)
+	return &pb.ReleaseResponse{
+		Access: false,
+	}, nil
 }
 
 func NodeServer(node *node) {
