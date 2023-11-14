@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package DSMutualExclusion;
+
+option go_package = "grpc/proto";
+
+//Node requests for token
+message TokenRequest {
+  int64 ID = 1;
+}
+
+//Current holder of token responds with access
+message TokenResponse {
+  int64 holderID = 1;
+  bool access = 2;
+}
+
+//Current holder is done with process
+message ReleaseRequest {
+  int64 holderID = 1;
+}
+
+//Token is free, CS can be accessed
+message ReleaseResponse {
+  bool access = 2;
+}
+
+service Mutual {
+  rpc RequestToken(TokenRequest) returns (TokenResponse) {}
+  rpc ReleaseToken(ReleaseRequest) returns (ReleaseResponse) {}
+}
